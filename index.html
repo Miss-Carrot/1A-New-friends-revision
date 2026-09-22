@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social &amp; Friendship Idioms – Gap Fill</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗣️</text></svg>">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #16a34a;
+      --error: #dc2626;
+      --border: #e2e8f0;
+      --input-bg: #f1f5f9;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .timer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding: 0.85rem 1.1rem;
+      background: var(--card);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      flex-wrap: wrap;
+    }
+    .timer {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--primary);
+    }
+    .timer.warning { color: #ea580c; }
+    .timer.danger { color: var(--error); animation: pulse 0.8s infinite; }
+    @keyframes pulse {
+      50% { opacity: 0.6; }
+    }
+    .score-display {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .score-display strong { color: var(--text); }
+    .controls {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    button {
+      font: inherit;
+      font-weight: 600;
+      padding: 0.55rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    button:active { transform: scale(0.97); }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+    #checkBtn {
+      background: var(--primary);
+      color: white;
+    }
+    #checkBtn:hover:not(:disabled) { background: var(--primary-hover); }
+    #resetBtn {
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    #resetBtn:hover:not(:disabled) { background: #e2e8f0; }
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .item {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .item.correct { border-left-color: var(--success); }
+    .item.incorrect { border-left-color: var(--error); }
+    .item-num {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .sentence {
+      font-size: 1.05rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.3rem 0.25rem;
+      margin-bottom: 0.4rem;
+    }
+    .sentence input {
+      font: inherit;
+      font-size: 1rem;
+      padding: 0.25rem 0.5rem;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text);
+      min-width: 4.5rem;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .sentence input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .sentence input.ok {
+      border-color: var(--success);
+      background: #f0fdf4;
+    }
+    .sentence input.bad {
+      border-color: var(--error);
+      background: #fef2f2;
+    }
+    .sentence input:disabled {
+      opacity: 0.85;
+    }
+    .definition {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .feedback {
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+      font-weight: 500;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.ok { color: var(--success); }
+    .feedback.bad { color: var(--error); }
+    .results-banner {
+      display: none;
+      text-align: center;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      background: var(--card);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .results-banner.show { display: block; }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 520px) {
+      h1 { font-size: 1.25rem; }
+      .sentence { font-size: 0.98rem; }
+      .sentence input { min-width: 3.8rem; font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Social &amp; Friendship Idioms</h1>
+      <p class="subtitle">Fill in the gaps. You have 3 minutes. Press Check when ready.</p>
+    </header>
+
+    <div class="timer-bar">
+      <div class="timer" id="timer">3:00</div>
+      <div class="score-display" id="scoreDisplay">Score: — / 20</div>
+      <div class="controls">
+        <button id="checkBtn">Check Answers</button>
+        <button id="resetBtn">New Round</button>
+      </div>
+    </div>
+
+    <div class="results-banner" id="resultsBanner"></div>
+
+    <div class="quiz-list" id="quizList"></div>
+
+    <footer>
+      Shuffle on every load · No real-time validation · Light theme
+    </footer>
+  </div>
+
+  <script>
+    const ITEMS = [
+      {
+        id: 1,
+        parts: ["to ", " over something"],
+        answers: [["bond"]],
+        def: "to become closer because you share an interest, experience, opinion, or activity"
+      },
+      {
+        id: 2,
+        parts: ["to be on the same ", " / ", ""],
+        answers: [["wavelength", "page"], ["page", "wavelength"]],
+        altNote: "wavelength or page",
+        def: "to understand someone easily and have similar ways of thinking or feeling"
+      },
+      {
+        id: 3,
+        parts: ["to see ", " ", " ", " with someone"],
+        answers: [["eye", "to", "eye"]],
+        def: "to agree with someone, especially about an important issue"
+      },
+      {
+        id: 4,
+        parts: ["to ", " with someone"],
+        answers: [["click"]],
+        def: "to have an easy, natural connection with someone and feel that you understand each other"
+      },
+      {
+        id: 5,
+        parts: ["a party ", ""],
+        answers: [["animal"]],
+        def: "someone who loves going to parties and socialising, often frequently"
+      },
+      {
+        id: 6,
+        parts: ["a ", ""],
+        answers: [["loner"]],
+        def: "someone who prefers spending time alone rather than with other people"
+      },
+      {
+        id: 7,
+        parts: ["a ", " / a party ", ""],
+        answers: [["killjoy", "pooper"]],
+        def: "someone who spoils other people's enjoyment by refusing to join in or being negative"
+      },
+      {
+        id: 8,
+        parts: ["to paint the ", " ", ""],
+        answers: [["town", "red"]],
+        def: "to go out and have a very lively, enjoyable time, especially partying"
+      },
+      {
+        id: 9,
+        parts: ["to let your ", " down"],
+        answers: [["hair"]],
+        def: "to relax and enjoy yourself without worrying about being serious or behaving formally"
+      },
+      {
+        id: 10,
+        parts: ["to ", " your ideas off someone"],
+        answers: [["bounce"]],
+        def: "to discuss your ideas with someone to get their reaction, feedback, or suggestions"
+      },
+      {
+        id: 11,
+        parts: ["", "-", " people"],
+        answers: [["like", "minded"]],
+        def: "having similar interests, opinions, attitudes, or values to another person"
+      },
+      {
+        id: 12,
+        parts: ["to ", " together"],
+        answers: [["get"]],
+        def: "to meet socially, usually to spend time together"
+      },
+      {
+        id: 13,
+        parts: ["to ", " ", " someone for help / advice"],
+        answers: [["turn", "to"]],
+        def: "to go to / ask someone for help, advice, support, or comfort"
+      },
+      {
+        id: 14,
+        parts: ["a bad ", ""],
+        answers: [["mixer"]],
+        def: "someone who finds it difficult to socialise or feel comfortable in groups"
+      },
+      {
+        id: 15,
+        parts: ["to run in the same ", ""],
+        answers: [["circles"]],
+        def: "to belong to the same social groups"
+      },
+      {
+        id: 16,
+        parts: ["to have a ", "friend"],
+        answers: [["mutual"]],
+        def: "to have a friend whom both you and another person know"
+      },
+      {
+        id: 17,
+        parts: ["to ", " oneself to oneself"],
+        answers: [["keep"]],
+        def: "to avoid talking to or socialising with other people and generally be private"
+      },
+      {
+        id: 18,
+        parts: ["to ", " up to someone"],
+        answers: [["open"]],
+        def: "to start talking honestly about your feelings, thoughts, or personal experiences"
+      },
+      {
+        id: 19,
+        parts: ["to ", " in someone"],
+        answers: [["confide"]],
+        def: "to tell someone something personal or private because you trust them"
+      },
+      {
+        id: 20,
+        parts: ["to ", " it off"],
+        answers: [["hit"]],
+        def: "to like someone and have a good connection with them immediately"
+      }
+    ];
+
+    // Special handling for item 2 (either order of wavelength/page).
+
+    let order = [];
+    let timeLeft = 180;
+    let timerId = null;
+    let finished = false;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function normalize(s) {
+      return s.trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function buildQuiz() {
+      order = shuffle(ITEMS.map((_, i) => i));
+      const list = document.getElementById("quizList");
+      list.innerHTML = "";
+      finished = false;
+      document.getElementById("resultsBanner").classList.remove("show");
+      document.getElementById("scoreDisplay").textContent = "Score: — / 20";
+      document.getElementById("checkBtn").disabled = false;
+
+      order.forEach((idx, displayNum) => {
+        const item = ITEMS[idx];
+        const div = document.createElement("div");
+        div.className = "item";
+        div.dataset.idx = idx;
+
+        let sentenceHTML = "";
+        const numGaps = item.parts.length - 1;
+        for (let g = 0; g < numGaps; g++) {
+          sentenceHTML += item.parts[g];
+          const width = item.id === 2 ? "8rem" : "5.5rem";
+          sentenceHTML += `<input type="text" data-gap="${g}" autocomplete="off" spellcheck="false" style="min-width:${width}">`;
+        }
+        sentenceHTML += item.parts[numGaps];
+
+        div.innerHTML = `
+          <div class="item-num">#${displayNum + 1}</div>
+          <div class="sentence">${sentenceHTML}</div>
+          <div class="definition">${item.def}</div>
+          <div class="feedback"></div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timeLeft = 180;
+      updateTimerDisplay();
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          timeLeft = 0;
+          updateTimerDisplay();
+          finishQuiz(true);
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      const el = document.getElementById("timer");
+      el.textContent = `${m}:${s.toString().padStart(2, "0")}`;
+      el.classList.remove("warning", "danger");
+      if (timeLeft <= 30) el.classList.add("danger");
+      else if (timeLeft <= 60) el.classList.add("warning");
+    }
+
+    function checkAnswers() {
+      if (finished) return;
+      finishQuiz(false);
+    }
+
+    function finishQuiz(timedOut) {
+      finished = true;
+      clearInterval(timerId);
+      document.getElementById("checkBtn").disabled = true;
+
+      let correctCount = 0;
+      const items = document.querySelectorAll(".item");
+
+      items.forEach(div => {
+        const idx = +div.dataset.idx;
+        const item = ITEMS[idx];
+        const inputs = div.querySelectorAll("input");
+        const userVals = Array.from(inputs).map(inp => normalize(inp.value));
+        const feedback = div.querySelector(".feedback");
+
+        let isCorrect = false;
+
+        // Check against all acceptable answer sets
+        for (const ansSet of item.answers) {
+          if (ansSet.length !== userVals.length) continue;
+          let match = true;
+          for (let i = 0; i < ansSet.length; i++) {
+            if (normalize(ansSet[i]) !== userVals[i]) {
+              match = false;
+              break;
+            }
+          }
+          if (match) {
+            isCorrect = true;
+            break;
+          }
+        }
+
+        // Special case for item 2: accept either single correct word in either blank if only one filled? No – require both blanks filled with the two words in either order.
+        // Already handled by answers array having both orders.
+
+        if (isCorrect) {
+          correctCount++;
+          div.classList.add("correct");
+          div.classList.remove("incorrect");
+          inputs.forEach(inp => {
+            inp.classList.add("ok");
+            inp.classList.remove("bad");
+            inp.disabled = true;
+          });
+          feedback.textContent = "✓ Correct";
+          feedback.className = "feedback show ok";
+        } else {
+          div.classList.add("incorrect");
+          div.classList.remove("correct");
+          inputs.forEach(inp => {
+            inp.classList.add("bad");
+            inp.classList.remove("ok");
+            inp.disabled = true;
+          });
+          // Show the primary correct answer
+          const primary = item.answers[0].join(" ");
+          let show = primary;
+          if (item.id === 2) show = "wavelength / page (either order)";
+          if (item.id === 7) show = "killjoy / pooper";
+          if (item.id === 11) show = "like-minded people";
+          feedback.textContent = "✗ Correct: " + show;
+          feedback.className = "feedback show bad";
+        }
+      });
+
+      document.getElementById("scoreDisplay").innerHTML = `Score: <strong>${correctCount} / 20</strong>`;
+      const banner = document.getElementById("resultsBanner");
+      banner.classList.add("show");
+      if (timedOut) {
+        banner.textContent = `Time’s up! You scored ${correctCount} out of 20.`;
+      } else {
+        banner.textContent = `You scored ${correctCount} out of 20.`;
+      }
+      if (correctCount === 20) {
+        banner.style.color = "var(--success)";
+      } else if (correctCount >= 14) {
+        banner.style.color = "var(--primary)";
+      } else {
+        banner.style.color = "var(--text)";
+      }
+    }
+
+    function newRound() {
+      clearInterval(timerId);
+      buildQuiz();
+      startTimer();
+    }
+
+    document.getElementById("checkBtn").addEventListener("click", checkAnswers);
+    document.getElementById("resetBtn").addEventListener("click", newRound);
+
+    // Allow Enter to submit when focused on an input
+    document.getElementById("quizList").addEventListener("keydown", e => {
+      if (e.key === "Enter" && !finished) {
+        e.preventDefault();
+        checkAnswers();
+      }
+    });
+
+    // Init
+    buildQuiz();
+    startTimer();
+  </script>
+</body>
+</html>
